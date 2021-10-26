@@ -1,7 +1,7 @@
-import React, {useEffect, useState, useReducer} from "react"
+import React, {useEffect} from "react"
 import ReactDOM from "react-dom"
 import {useImmerReducer} from "use-immer";
-import {BrowserRouter, Switch, Route} from "react-router-dom"
+import {BrowserRouter, Route, Switch} from "react-router-dom"
 
 // my component
 import Header from './components/Header'
@@ -11,6 +11,7 @@ import Footer from './components/Footer'
 import About from './components/About'
 import Terms from './components/Terms'
 import CreatePost from './components/CreatePost'
+import {CSSTransition} from "react-transition-group";
 import Axios from "axios";
 import ViewSinglePost from './components/ViewSinglePost'
 import FlashMessages from './components/FlashMessages'
@@ -20,7 +21,8 @@ import Profile from './components/Profile'
 import EditPost from './components/EditPost'
 import Search from './components/Search'
 import NotFound from './components/NotFound'
-Axios.defaults.baseURL = 'http://localhost:8080'
+
+Axios.defaults.baseURL = 'http://localhost:8088'
 
 function Main() {
   const initialState = {
@@ -30,7 +32,8 @@ function Main() {
       token: localStorage.getItem('complexappToken'),
       username: localStorage.getItem('complexappUsername'),
       avatar: localStorage.getItem('complexappAvatar')
-    }
+    },
+    isSearchOpen: false
   }
 
   function ourReducer(draft, action) {
@@ -44,6 +47,12 @@ function Main() {
         return;
       case 'flashMessage':
         draft.flashMessages.push(action.value)
+        return;
+      case 'openSearch':
+        draft.isSearchOpen=true
+        return;
+      case 'closeSearch':
+        draft.isSearchOpen=false
         return;
     }
   }
@@ -94,7 +103,9 @@ function Main() {
               <NotFound/>
             </Route>
           </Switch>
-
+          <CSSTransition timeout={330} in={state.isSearchOpen} classNames={'search-overlay'} unmountOnExit>
+            <Search />
+          </CSSTransition>
           <Footer/>
         </BrowserRouter>
       </DispatchContext.Provider>

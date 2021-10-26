@@ -1,26 +1,30 @@
-import React, {useEffect, useContext, useState} from 'react';
+import React, {useContext, useEffect} from 'react';
 import Page from './Page'
 import {useParams} from 'react-router-dom'
 import Axios from "axios";
 import StateContext from '../StateContext'
 import ProfilePosts from './ProfilePosts'
+import {useImmer} from "use-immer";
 
 const Profile = () => {
   const ourRequest = Axios.CancelToken.source()
 
   const {username} = useParams()
   const appState = useContext(StateContext)
-  const [profileData, setProfileData] = useState({
-    profileUsername: '...',
-    profileAvatar: 'https://gravatar.com/avatar/placeholder?s=128',
-    isFollowing: false,
-    counts: {postCount: '', followerCount: '', followingCount: ''}
+  const [state, setState] = useImmer({
+    followActionLoading: false,
+    profileData: {
+      profileUsername: '...',
+      profileAvatar: 'https://gravatar.com/avatar/placeholder?s=128',
+      isFollowing: false,
+      counts: {postCount: '', followerCount: '', followingCount: ''}
+    }
   })
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await Axios.post(`/profile/${username}`, {token: appState.user.token},{cancelToken:ourRequest.token})
+        const response = await Axios.post(`/profile/${username}`, {token: appState.user.token}, {cancelToken: ourRequest.token})
         setProfileData(response.data)
       } catch (e) {
         console.log('There was a problem or the request was canceled!');

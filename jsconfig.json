@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "baseUrl": "app"
+  },
+  "include": ["app"],
+  "exclude": ["node_modules"]
+}
